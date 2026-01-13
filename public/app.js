@@ -1,5 +1,5 @@
 // API Base URL
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://bd37f6df4101.ngrok-free.app/api';
 
 // Switch tabs
 function switchTab(tab) {

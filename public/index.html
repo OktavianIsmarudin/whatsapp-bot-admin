@@ -329,6 +329,225 @@
             margin-bottom: 15px;
             color: #333;
         }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        
+        /* Tablet & Mobile - 768px and below */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .tab {
+                flex: 1 1 calc(50% - 8px);
+                min-width: 140px;
+                padding: 10px 16px;
+                font-size: 14px;
+                text-align: center;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .keyword-item, .contact-item {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+            }
+
+            .keyword-actions, .contact-actions {
+                justify-content: flex-end;
+                margin-top: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            /* QR Code responsive */
+            #qrCode {
+                max-width: 100%;
+                height: auto;
+            }
+
+            /* Form responsive */
+            input, textarea {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+
+            /* Table responsive */
+            table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* Mobile Only - 480px and below */
+        @media screen and (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2em;
+            }
+
+            .bot-status {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .tab {
+                flex: 1 1 100%;
+                padding: 12px;
+            }
+
+            .content {
+                padding: 15px 10px;
+            }
+
+            .keyword-item, .contact-item {
+                padding: 10px;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            /* Stack buttons vertically on very small screens */
+            .keyword-actions, .contact-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .keyword-actions .btn, .contact-actions .btn {
+                width: 100%;
+            }
+
+            /* Smaller form elements */
+            label {
+                font-size: 14px;
+            }
+
+            input, textarea {
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+
+        /* Tablet Portrait - 481px to 768px */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            .tab {
+                flex: 1 1 calc(33.333% - 8px);
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop & Tablet Landscape - 769px and above */
+        @media screen and (min-width: 769px) {
+            .tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab {
+                flex-shrink: 0;
+            }
+        }
+
+        /* Large Desktop - 1200px and above */
+        @media screen and (min-width: 1200px) {
+            .container {
+                max-width: 1400px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .btn, .tab {
+                display: none;
+            }
+
+            .content {
+                box-shadow: none;
+            }
+        }
+
+        /* Touch Device Improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                padding: 14px 24px;
+                min-height: 48px; /* Better touch target */
+            }
+
+            .tab {
+                min-height: 44px;
+            }
+
+            .keyword-item:hover, .contact-item:hover {
+                transform: none; /* Disable hover effects on touch */
+            }
+        }
+
+        /* Dark Mode Support (optional) */
+        @media (prefers-color-scheme: dark) {
+            /* Uncomment to enable dark mode
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            }
+
+            .header, .content {
+                background: #2a2a3e;
+                color: #e0e0e0;
+            }
+
+            input, textarea {
+                background: #1a1a2e;
+                color: #e0e0e0;
+                border-color: #444;
+            }
+
+            .keyword-item, .contact-item, .card {
+                background: #1a1a2e;
+            }
+            */
+        }
     </style>
 </head>
 <body>
