@@ -1,0 +1,307 @@
+================================================================================
+      PANDUAN LENGKAP: HOSTING WHATSAPP BOT DI HOSTINGER VPS
+================================================================================
+
+📋 PERSIAPAN
+================================================================================
+
+1. ✅ Pastikan Anda sudah order VPS Hostinger
+2. ✅ Pilih OS: Ubuntu (recommended)
+3. ✅ Tunggu email konfirmasi dengan:
+   - IP Address VPS
+   - Root Password
+   - SSH Access Details
+
+
+🚀 LANGKAH 1: CONNECT KE VPS VIA SSH
+================================================================================
+
+Di PowerShell Anda, jalankan:
+
+    ssh root@IP_VPS_ANDA
+
+Contoh:
+    ssh root@123.456.789.012
+
+Masukkan password yang diberikan Hostinger saat diminta.
+
+TIPS: Copy password dari email, lalu di PowerShell:
+- Right-click untuk paste (tidak bisa Ctrl+V)
+
+
+📦 LANGKAH 2: UPLOAD & RUN SETUP SCRIPT
+================================================================================
+
+Setelah login ke VPS, jalankan command ini SATU PER SATU:
+
+1. Download setup script:
+   
+   wget https://raw.githubusercontent.com/OktavianIsmarudin/whatsapp-bot-admin/main/vps-setup.sh
+
+   ATAU (jika gagal):
+   
+   curl -O https://raw.githubusercontent.com/OktavianIsmarudin/whatsapp-bot-admin/main/vps-setup.sh
+
+
+2. Berikan permission execute:
+   
+   chmod +x vps-setup.sh
+
+
+3. Jalankan setup script:
+   
+   ./vps-setup.sh
+
+   
+TUNGGU 5-10 MENIT hingga instalasi selesai!
+
+
+📊 LANGKAH 3: CEK STATUS BOT
+================================================================================
+
+Setelah instalasi selesai, cek status:
+
+    pm2 status
+
+Output yang benar:
+┌─────┬────────────────┬─────────┬─────────┬──────────┐
+│ id  │ name           │ status  │ restart │ uptime   │
+├─────┼────────────────┼─────────┼─────────┼──────────┤
+│ 0   │ whatsapp-bot   │ online  │ 0       │ 10s      │
+└─────┴────────────────┴─────────┴─────────┴──────────┘
+
+Lihat logs:
+
+    pm2 logs whatsapp-bot
+
+
+🌐 LANGKAH 4: AKSES DASHBOARD
+================================================================================
+
+1. Cari IP VPS Anda:
+   
+   curl ifconfig.me
+
+2. Buka browser, akses:
+   
+   http://IP_VPS_ANDA:3000
+
+   Contoh: http://123.456.789.012:3000
+
+
+3. Dashboard akan muncul dengan 5 tabs:
+   - Bot Control
+   - Knowledge Base
+   - Contacts
+   - QA Database
+   - Configuration
+
+
+📱 LANGKAH 5: SCAN QR CODE & START BOT
+================================================================================
+
+1. Di dashboard, klik tab "Bot Control"
+
+2. Klik tombol "Start Bot"
+
+3. Tunggu QR code muncul (~30 detik)
+
+4. Scan QR code dengan WhatsApp di HP:
+   - Buka WhatsApp
+   - Tap Menu (⋮) → Perangkat Tertaut
+   - Tap "Tautkan Perangkat"
+   - Scan QR code di dashboard
+
+5. Status berubah: 🟢 Bot Online & Siap
+
+6. Test bot dengan kirim pesan ke nomor WhatsApp yang terhubung:
+   - "menu"
+   - "jadwal sholat"
+   - "info"
+
+
+🛠️ PERINTAH PENTING PM2
+================================================================================
+
+Cek status bot:
+    pm2 status
+
+Lihat logs real-time:
+    pm2 logs whatsapp-bot
+
+Restart bot:
+    pm2 restart whatsapp-bot
+
+Stop bot:
+    pm2 stop whatsapp-bot
+
+Start bot lagi:
+    pm2 start whatsapp-bot
+
+Delete bot:
+    pm2 delete whatsapp-bot
+
+
+🔄 UPDATE CODE DARI GITHUB
+================================================================================
+
+Jika Anda update code di GitHub dan ingin deploy perubahan:
+
+1. Login SSH ke VPS
+
+2. Masuk ke folder project:
+   cd /root/whatsapp-bot-admin
+
+3. Pull latest changes:
+   git pull
+
+4. Install dependencies baru (jika ada):
+   npm install
+
+5. Restart bot:
+   pm2 restart whatsapp-bot
+
+
+🔐 SECURITY TIPS
+================================================================================
+
+1. Ganti password root:
+   passwd
+
+2. Buat user non-root (optional):
+   adduser yourname
+   usermod -aG sudo yourname
+
+3. Setup SSH key authentication (optional tapi recommended)
+
+4. Enable automatic security updates:
+   apt install unattended-upgrades
+   dpkg-reconfigure --priority=low unattended-upgrades
+
+
+🐛 TROUBLESHOOTING
+================================================================================
+
+PROBLEM 1: Port 3000 tidak bisa diakses
+SOLUTION:
+    # Cek firewall
+    ufw status
+    
+    # Allow port 3000
+    ufw allow 3000
+    
+    # Cek di Hostinger Dashboard juga
+    # VPS → Firewall → Allow port 3000
+
+PROBLEM 2: Bot crash terus-menerus
+SOLUTION:
+    # Lihat error logs
+    pm2 logs whatsapp-bot
+    
+    # Restart bot
+    pm2 restart whatsapp-bot
+    
+    # Jika masih error, reinstall:
+    cd /root/whatsapp-bot-admin
+    rm -rf node_modules
+    npm install
+    pm2 restart whatsapp-bot
+
+PROBLEM 3: QR Code tidak muncul
+SOLUTION:
+    # Lihat logs untuk QR code di terminal
+    pm2 logs whatsapp-bot
+    
+    # QR code mungkin muncul di logs
+    # Scan dari sana
+
+PROBLEM 4: Memory habis (Out of Memory)
+SOLUTION:
+    # Upgrade VPS plan di Hostinger
+    # Atau optimize memory:
+    pm2 start server.js --name whatsapp-bot --max-memory-restart 300M
+
+PROBLEM 5: Session WhatsApp hilang setelah restart
+SOLUTION:
+    # Normal, .wwebjs_auth terhapus
+    # Scan QR code lagi
+    # Untuk persist, pastikan folder .wwebjs_auth tidak terhapus
+
+
+📈 MONITORING
+================================================================================
+
+Lihat resource usage:
+
+    # CPU & Memory
+    pm2 monit
+    
+    # System resources
+    htop
+    
+    # Disk usage
+    df -h
+
+
+💰 ESTIMASI BIAYA HOSTINGER VPS
+================================================================================
+
+VPS KVM 1 (~Rp 50.000/bulan):
+- 1 CPU Core
+- 4 GB RAM
+- 50 GB SSD
+- ✅ CUKUP untuk WhatsApp Bot
+
+VPS KVM 2 (~Rp 100.000/bulan):
+- 2 CPU Cores
+- 8 GB RAM
+- 100 GB SSD
+- ✅ LEBIH DARI CUKUP
+
+
+📞 SUPPORT
+================================================================================
+
+Jika ada error, kirim:
+1. Output dari: pm2 logs whatsapp-bot
+2. Screenshot error
+3. Deskripsi masalah
+
+Contact: Email/WA pengembang
+
+
+✅ CHECKLIST DEPLOYMENT
+================================================================================
+
+PRE-DEPLOYMENT:
+☐ VPS Hostinger aktif
+☐ Ubuntu ter-install
+☐ SSH credentials tersedia
+☐ Port 3000 allowed di firewall
+
+DEPLOYMENT:
+☐ Connect via SSH
+☐ Run vps-setup.sh
+☐ Instalasi selesai tanpa error
+☐ pm2 status = online
+
+POST-DEPLOYMENT:
+☐ Dashboard accessible via browser
+☐ QR code scanned
+☐ Bot status = Online & Siap
+☐ Test bot dengan kirim "menu"
+☐ Auto-reply working
+
+
+🎉 SELAMAT! BOT ANDA SUDAH ONLINE 24/7!
+================================================================================
+
+Dashboard: http://IP_VPS_ANDA:3000
+Status: Aktif & Siap Menerima Pesan
+Auto-Restart: Enabled (via PM2)
+Uptime: 24/7 (selama VPS aktif)
+
+
+================================================================================
+                            TERIMA KASIH!
+================================================================================
