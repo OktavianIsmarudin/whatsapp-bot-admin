@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .bot-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+
+        .status-indicator.ready {
+            background: #25D366;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .tab.active {
+            background: #25D366;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #25D366;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: #25D366;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .keyword-list {
+            margin-top: 30px;
+        }
+
+        .keyword-item, .contact-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .keyword-item:hover, .contact-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .keyword-info, .contact-info {
+            flex: 1;
+        }
+
+        .keyword-info strong {
+            color: #25D366;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .keyword-actions, .contact-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .contact-number {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .contact-last-msg {
+            color: #999;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #2ecc71;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            margin-left: 10px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+
+        .qr-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #qrcode {
+            max-width: 300px;
+            margin: 20px auto;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 WhatsApp Bot Admin Dashboard</h1>
+            <div class="bot-status">
+                <span class="status-indicator" id="statusIndicator"></span>
+                <span id="statusText">Checking status...</span>
+                <button class="btn" id="startBotBtn" style="margin-left: auto;">Start Bot</button>
+                <button class="btn btn-danger" id="stopBotBtn" style="display: none;">Stop Bot</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('control')">🎮 Kontrol Bot</button>
+            <button class="tab" onclick="switchTab('contacts')">👥 Kontrol Chat</button>
+            <button class="tab" onclick="switchTab('knowledge')">📚 Knowledge Base</button>
+            <button class="tab" onclick="switchTab('qa-database')">📖 QA Database</button>
+            <button class="tab" onclick="switchTab('config')">⚙️ Konfigurasi</button>
+        </div>
+
+        <div class="content">
+            <!-- Bot Control Tab -->
+            <div id="control-tab" class="tab-content active">
+                <h2>Kontrol Bot</h2>
+                <div class="alert alert-info">
+                    Gunakan panel ini untuk mengontrol bot WhatsApp Anda
+                </div>
+                
+                <div id="qrSection" style="display: none;">
+                    <div class="qr-container">
+                        <h3>Scan QR Code</h3>
+                        <p>Buka WhatsApp di HP Anda → Menu → Linked Devices → Link a Device</p>
+                        <div id="qrcode"></div>
+                    </div>
+                </div>
+
+                <div id="readySection" style="display: none;">
+                    <div class="alert alert-success">
+                        ✅ Bot sudah terhubung dan siap menerima pesan!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Control Tab -->
+            <div id="contacts-tab" class="tab-content">
+                <h2>Kontrol Chat - Mode Balasan</h2>
+                <div class="alert alert-info">
+                    <strong>ℹ️ Info:</strong> Aktifkan/nonaktifkan balasan otomatis untuk setiap kontak. 
+                    Jika dinonaktifkan, Anda bisa membalas chat secara manual tanpa gangguan bot.
+                </div>
+                <div id="contactItems">
+                    <p style="color: #666;">Memuat data kontak...</p>
+                </div>
+            </div>
+
+            <!-- Knowledge Base Tab -->
+            <div id="knowledge-tab" class="tab-content">
+                <h2>Kelola Knowledge Base</h2>
+                <p style="margin-bottom: 20px; color: #666;">Tambahkan keyword dan respons otomatis untuk bot Anda</p>
+
+                <!-- Import Excel Section -->
+                <div class="card" style="background: #f8f9fa; margin-bottom: 20px;">
+                    <h3>📥 Import dari Excel</h3>
+                    <p style="color: #666; margin-bottom: 15px;">
+                        Upload file Excel (.xls atau .xlsx) dengan format:<br>
+                        <strong>Kolom 1:</strong> keyword atau kata<br>
+                        <strong>Kolom 2:</strong> response atau jawaban
+                    </p>
+                    <input type="file" id="excelFile" accept=".xls,.xlsx" style="margin-bottom: 10px;">
+                    <button class="btn" onclick="importExcel()" style="background: #28a745;">
+                        📥 Import Excel
+                    </button>
+                    <a href="#" onclick="downloadTemplate()" style="margin-left: 10px; color: #007bff; text-decoration: none;">
+                        📄 Download Template Excel
+                    </a>
+                </div>
+
+                <div class="form-group">
+                    <label>Keyword / Perintah</label>
+                    <input type="text" id="keyword" placeholder="Contoh: halo, menu, info">
+                    <small style="color: #666;">Gunakan huruf kecil, tanpa spasi di awal/akhir</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Respons Bot</label>
+                    <textarea id="response" placeholder="Ketik respons yang akan dikirim bot...&#10;&#10;Gunakan variabel:&#10;{companyName} - Nama perusahaan&#10;{business} - Bidang usaha&#10;{phone} - Nomor telepon&#10;{email} - Email&#10;{address} - Alamat"></textarea>
+                </div>
+
+                <button class="btn" onclick="saveKeyword()">💾 Simpan Keyword</button>
+
+                <div class="keyword-list" id="keywordList">
+                    <h3>Daftar Keywords</h3>
+                    <div id="keywordItems"></div>
+                </div>
+            </div>
+
+            <!-- QA Database Tab -->
+            <div id="qa-database-tab" class="tab-content">
+                <h2>QA Database - Jawaban dari Ustad</h2>
+                <p style="margin-bottom: 20px; color: #666;">Kelola database pertanyaan & jawaban dari ustad untuk respon otomatis yang lebih akurat</p>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3>➕ Tambah/Edit Data Q&A</h3>
+                    <input type="hidden" id="qaId">
+                    
+                    <div class="form-group">
+                        <label>Pertanyaan</label>
+                        <textarea id="qaQuestion" placeholder="Contoh: Apakah boleh shalat pakai kaos kaki?" rows="2" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jawaban</label>
+                        <textarea id="qaAnswer" placeholder="Jawaban lengkap dari ustad..." rows="5" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;"></textarea>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label>Nama Ustad</label>
+                            <input type="text" id="qaUstadz" placeholder="Ustadz Ahmad Zainuddin">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <input type="text" id="qaCategory" placeholder="Fiqih Shalat">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags (pisahkan dengan koma)</label>
+                        <input type="text" id="qaTags" placeholder="shalat, kaos kaki, wudhu">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL Referensi (opsional)</label>
+                        <input type="text" id="qaUrl" placeholder="https://konsultasisyariah.net/...">
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" onclick="saveQAData()">💾 Simpan Data</button>
+                        <button class="btn" onclick="clearQAForm()" style="background: #6c757d;">🔄 Reset Form</button>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3>📥 Import dari Excel</h3>
+                    <p style="color: #666; margin-bottom: 10px; font-size: 14px;">
+                        Format kolom Excel: <strong>id, question, answer, ustadz, category, tags, url</strong>
+                    </p>
+                    <input type="file" id="qaExcelFile" accept=".xlsx,.xls" style="margin-bottom: 10px;">
+                    <button class="btn" onclick="importQAExcel()">📤 Import Excel</button>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Daftar QA Database</h3>
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="qaSearchInput" placeholder="🔍 Cari pertanyaan..." onkeyup="filterQAData()" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div id="qaDataList" style="max-height: 500px; overflow-y: auto;">
+                        <!-- QA items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Tab -->
+            <div id="config-tab" class="tab-content">
+                <h2>Konfigurasi Perusahaan</h2>
+                <p style="margin-bottom: 20px; color: #666;">Setting informasi perusahaan yang akan digunakan dalam respons bot</p>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Informasi Dasar</h3>
+                        <div class="form-group">
+                            <label>Nama Perusahaan</label>
+                            <input type="text" id="companyName" placeholder="PT. Contoh Indonesia">
+                        </div>
+                        <div class="form-group">
+                            <label>Bidang Usaha</label>
+                            <input type="text" id="business" placeholder="Teknologi & IT">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Kontak</h3>
+                        <div class="form-group">
+                            <label>Nomor Telepon</label>
+                            <input type="text" id="phone" placeholder="+62812345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" placeholder="info@perusahaan.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Alamat Lengkap</label>
+                    <textarea id="address" placeholder="Jalan, Kelurahan, Kecamatan, Kota, Provinsi"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Jam Operasional</label>
+                    <input type="text" id="operationalHours" placeholder="Senin-Jumat 08:00-17:00">
+                </div>
+
+                <button class="btn" onclick="saveConfig()">💾 Simpan Konfigurasi</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

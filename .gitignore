@@ -1,0 +1,8 @@
+node_modules/
+.wwebjs_auth/
+.wwebjs_cache/
+package-lock.json
+*.log
+.env
+knowledge.json
+bot-config.json
